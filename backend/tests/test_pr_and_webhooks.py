@@ -198,6 +198,7 @@ def test_webhook_pr_merged_triggers_scoring(db_conn, test_user):
 
         # Verify PR status updated to merged
         updated_pr = pr_repo.get_by_id(pr_rec.pr_id)
+        assert updated_pr is not None
         assert updated_pr.status == "merged"
         assert updated_pr.merged_at is not None
 

@@ -75,6 +75,7 @@ def test_award_merged_pr_and_tier_promotion(db_conn, test_user):
 
     # Verify user profile was updated
     updated_profile = profile_repo.get_profile(test_user.id)
+    assert updated_profile is not None
     assert updated_profile.cumulative_score == cnt.total_score
     assert updated_profile.rank_tier != ""
 
