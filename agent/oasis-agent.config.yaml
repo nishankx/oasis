@@ -1,0 +1,88 @@
+# oasis-agent Configuration File
+version: "1.0"
+
+# LLM Providers Configuration (All Free-Tier APIs)
+providers:
+  google_gemini_flash:
+    base_url: "https://generativelanguage.googleapis.com/v1beta/openai"
+    model: "gemini-flash-latest"
+    api_key_env: "GOOGLE_API_KEY"
+    timeout_seconds: 45
+    max_retries: 2
+  groq_gpt_oss:
+    base_url: "https://api.groq.com/openai/v1"
+    model: "openai/gpt-oss-120b"
+    api_key_env: "GROQ_API_KEY"
+    timeout_seconds: 30
+    max_retries: 2
+  groq_qwen:
+    base_url: "https://api.groq.com/openai/v1"
+    model: "qwen/qwen3.8-27b"
+    api_key_env: "GROQ_API_KEY"
+    timeout_seconds: 30
+    max_retries: 2
+  openrouter_nemotron:
+    base_url: "https://openrouter.ai/api/v1"
+    model: "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
+    api_key_env: "OPENROUTER_API_KEY"
+    timeout_seconds: 35
+    max_retries: 2
+  openrouter_minimax:
+    base_url: "https://openrouter.ai/api/v1"
+    model: "minimax/minimax-m3:free"
+    api_key_env: "OPENROUTER_API_KEY"
+    timeout_seconds: 35
+    max_retries: 2
+  nvidia_nim:
+    base_url: "https://integrate.api.nvidia.com/v1"
+    model: "meta/llama-3.2-11b-vision-instruct"
+    api_key_env: "NVIDIA_API_KEY"
+    timeout_seconds: 30
+    max_retries: 2
+
+# Dynamic Task-to-Provider Routing with Fallback Chains
+llm_routing:
+  context_mapping:
+    primary: "groq_gpt_oss"
+    fallback: ["google_gemini_flash", "nvidia_nim"]
+  codebase_search:
+    primary: "groq_gpt_oss"
+    fallback: ["groq_qwen", "google_gemini_flash"]
+  code_editing:
+    primary: "groq_gpt_oss"
+    fallback: ["google_gemini_flash", "openrouter_nemotron", "nvidia_nim"]
+  meaningfulness_judgment:
+    primary: "groq_gpt_oss"
+    fallback: ["google_gemini_flash", "openrouter_nemotron", "nvidia_nim"]
+  pr_description_generation:
+    primary: "groq_gpt_oss"
+    fallback: ["google_gemini_flash", "openrouter_minimax"]
+  review_report_generation:
+    primary: "groq_gpt_oss"
+    fallback: ["google_gemini_flash", "openrouter_minimax"]
+
+# Meaningfulness Gatekeeper Parameters
+gatekeeper:
+  confidence_threshold: 0.70
+  run_local_tests: true
+  reject_on_test_failure: true
+  reject_on_empty_diff: true
+  reject_on_whitespace_only: true
+  reject_on_comment_only: true
+
+# Git and GitHub PR defaults
+git:
+  branch_prefix: "oasis-agent/fix-issue-"
+  commit_message_prefix: "fix"
+  shallow_clone: true
+  cache_dir: ".oasis-agent/cache"
+
+# Reporting & Audit
+reporting:
+  output_dir: ".oasis-agent/reports"
+  database_path: ".oasis-agent/history.db"
+  comment_on_rejection: false # Set true to post explanation comment on issue if rejected
+
+# Data Privacy Notice Flag
+privacy:
+  warning_dismissed: true
