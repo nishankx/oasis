@@ -35,10 +35,11 @@ def test_cli_status():
 def test_cli_history_empty(tmp_path, monkeypatch):
     # Route history DB to a clean temp directory
     cfg_file = tmp_path / "oasis-agent.config.yaml"
+    db_path = (tmp_path / "history.db").as_posix()
     cfg_file.write_text(f"""
 version: "1.0"
 reporting:
-  database_path: "{str(tmp_path / 'history.db').replace('\\', '/')}"
+  database_path: "{db_path}"
 """, encoding="utf-8")
 
     result = runner.invoke(app, ["history", "--config", str(cfg_file)])
