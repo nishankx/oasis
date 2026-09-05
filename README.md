@@ -145,7 +145,7 @@ flowchart TD
     WS_SVC --> SQLITE
     SCORE --> SQLITE
     PR_SVC --> GH
-    HOOKS <-- Webhook Events -- GH
+    GH -->|Webhook Events| HOOKS
 
     AGENT_GW --> AgentEngine
     JUDGE <--> FreeTierLLM
